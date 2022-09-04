@@ -191,12 +191,13 @@ int main(int argc, char *argv[]) {
 		milliseconds_out = strtol(head, &end, 10);
 		if(head==end) goto write_line;
 		
-		is_time_shifted = true;
 		timeShift(&hours_in, &minutes_in, &seconds_in, &milliseconds_in, shift_hours, shift_minutes, shift_seconds, shift_milliseconds);
 		timeShift(&hours_out, &minutes_out, &seconds_out, &milliseconds_out, shift_hours, shift_minutes, shift_seconds, shift_milliseconds);
 
 		// format: "00:02:18,312 --> 00:02:22,838"
 		sprintf(new_line, "%02ld:%02ld:%02ld,%02ld --> %02ld:%02ld:%02ld,%02ld\n", hours_in, minutes_in, seconds_in, milliseconds_in, hours_out, minutes_out, seconds_out, milliseconds_out);
+		
+		is_time_shifted = true;
 
 write_line:
 		if(is_time_shifted) {
