@@ -19,13 +19,13 @@ void die(const char *message);
 bool isValidFile(char *path);
 bool stringIsNumber(char *str);
 int lineContainsChar(char *line, char c);
-void timeShift(long *h_ptr, long *m_ptr, long *s_ptr, long *ms_ptr, long h_shift, long m_shift, long s_shift, long ms_shift);
+void timeShift(long *h_ptr, long *m_ptr, long *s_ptr, long *ms_ptr, long ms_total_shift);
 
 int main(int argc, char *argv[]) {
 
 	// help?
 	if(strcmp(argv[1], "help") == EQUAL) {
-		printf("\nUse this tool to shift all time stamps in an .srt subtitle file.\nProvide two arguments: \n 1. PATH to .srt file \n 2. TIME in format 00:00:00,000 in hours:minutes:seconds,milliseconds\n\n");
+		printf("\nUse this tool to shift all time stamps in an .srt subtitle file.\nProvide two arguments: \n 1. PATH to .srt file \n 2. TIME in milliseconds\n\n");
 		die("");
 	}
 	
@@ -46,40 +46,17 @@ int main(int argc, char *argv[]) {
 	if(strcmp(file_type, ".srt") != EQUAL) 
 		die("File type  .srt  not valid.");
 
-	const char *ts_fail_msg = "Could not read time shift argument.";
-
 	char *time_shift = argv[2];
 	char *head;
 	char *end;
 	
 	head = time_shift;
 
-	long shift_hours;
-	shift_hours = strtol(head, &end, 10);
-	if(head==end) die(ts_fail_msg);
-	if(end[0]==COLON) end++;
-	else die(ts_fail_msg);
-
-	long shift_minutes;
-	head = end;
-	shift_minutes = strtol(head, &end, 10);
-	if(head==end) die(ts_fail_msg);
-	if(end[0]==COLON) end++;
-	else die(ts_fail_msg);
-
-	long shift_seconds;
-	head = end;
-	shift_seconds = strtol(head, &end, 10);
-	if(head==end) die(ts_fail_msg);
-	if(end[0]==COMMA) end++;
-	else die(ts_fail_msg);
-
 	long shift_milliseconds;
-	head = end;
 	shift_milliseconds = strtol(head, &end, 10);
-	if(head==end) die(ts_fail_msg);
+	if(head==end) die("Failed to read time shift argument.");
 
-	printf("Time shifting subtitles %ld hours, %ld minutes, %ld seconds, %ld milliseconds \n", shift_hours, shift_minutes, shift_seconds, shift_milliseconds);
+	printf("Time shifting subtitles %ld milliseconds \n", shift_milliseconds);
 
 	// open file
 	FILE *subtitles_source_file; 
@@ -191,8 +168,8 @@ int main(int argc, char *argv[]) {
 		milliseconds_out = strtol(head, &end, 10);
 		if(head==end) goto write_line;
 		
-		timeShift(&hours_in, &minutes_in, &seconds_in, &milliseconds_in, shift_hours, shift_minutes, shift_seconds, shift_milliseconds);
-		timeShift(&hours_out, &minutes_out, &seconds_out, &milliseconds_out, shift_hours, shift_minutes, shift_seconds, shift_milliseconds);
+		timeShift(&hours_in, &minutes_in, &seconds_in, &milliseconds_in, shift_milliseconds);
+		timeShift(&hours_out, &minutes_out, &seconds_out, &milliseconds_out, shift_milliseconds);
 
 		// format: "00:02:18,312 --> 00:02:22,838"
 		sprintf(new_line, "%02ld:%02ld:%02ld,%02ld --> %02ld:%02ld:%02ld,%02ld\n", hours_in, minutes_in, seconds_in, milliseconds_in, hours_out, minutes_out, seconds_out, milliseconds_out);
@@ -218,11 +195,10 @@ write_line:
 	return 0;
 }
 
-void timeShift(long *h_ptr, long *m_ptr, long *s_ptr, long *ms_ptr, long h_shift, long m_shift, long s_shift, long ms_shift) {
+void timeShift(long *h_ptr, long *m_ptr, long *s_ptr, long *ms_ptr, long ms_total_shift) {
 	long h = *h_ptr, m = *m_ptr, s = *s_ptr, ms = *ms_ptr;
 
 	long ms_total = (h * 3600 * 1000) + (m * 60 * 1000)+(s * 1000) + ms;
-	long ms_total_shift = (h_shift*3600*1000) + (m_shift*60*1000) + (s_shift*1000) + ms_shift;
 	ms_total = ms_total + ms_total_shift;
 
 	h = ms_total/(3600*1000);
