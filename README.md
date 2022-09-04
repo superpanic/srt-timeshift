@@ -7,4 +7,4 @@ TIME in milliseconds ```1000``` or ```-1000```
 
 Example: ```./srt-timeshift ./gladiator.srt -69420```
 
-For longer subs, adjust MAX_LINES define. Currently set to 20000.
+For longer subs, adjust ```#define MAX_LINES 20000``` (Currently set to 20000.)
