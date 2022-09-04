@@ -1,5 +1,5 @@
 # srt-timeshift
-Command line tool for time-shifting .srt subbtitles.
+A command line tool i needed for time-shifting .srt subbtitles.
 
 Provide two arguments:  
 PATH to ```subtitles.srt``` file  
