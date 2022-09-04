@@ -6,3 +6,5 @@ PATH to ```subtitles.srt``` file
 TIME in milliseconds ```1000``` or ```-1000```
 
 Example: ```./srt-timeshift ./gladiator.srt 00:04:20,069```
+
+For longer subs, adjust MAXLINES define. Currently set to 20000.
