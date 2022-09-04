@@ -205,7 +205,10 @@ write_line:
 		} else {
 			fprintf(subtitles_destination_file, "%s", line);
 		}
-		if(line_counter++ > MAX_LINES) break;
+		if(line_counter++ > MAX_LINES) {
+			printf("Aborting before complete read/write – reached max lines: %d\n", MAX_LINES);
+			break;
+		}
 	}
 
 	fclose(subtitles_source_file);
